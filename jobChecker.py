@@ -5,9 +5,10 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
-POLL_RATE = 300
+POLL_RATE = 30
 browser = webdriver.Firefox()
 notLogin = True
+bellHasRung = False
 
 while(1):
     
@@ -15,7 +16,7 @@ while(1):
     body.send_keys(Keys.CONTROL + 't')
    
     #get the page
-    browser.get('REDACTED')
+    browser.get('https://nursery.aerobotics.com/annotation-products')
     if notLogin:
         #Login
         email = browser.find_element_by_id("mat-input-0")
@@ -41,8 +42,10 @@ while(1):
     lowFruit = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[1]/div[1]/label')
     print "low fruit: "+lowFruit.text
 
-    totalFruit = int(highFruit.text) + int(medFruit.text) + int(lowFruit.text)
-
+    try:
+        totalFruit = int(highFruit.text) + int(medFruit.text) + int(lowFruit.text)
+    except ValueError:
+        print "fruit values are null"
 
     #check for tree jobs
     #check High Priority Job for fruit finding
@@ -55,21 +58,29 @@ while(1):
     lowTree = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[2]/div[1]/label')
     print "low tree: "+lowTree.text
 
-    totalTree = int(highTree.text) + int(medTree.text) + int(lowTree.text)
-
+    try:
+        totalTree = int(highTree.text) + int(medTree.text) + int(lowTree.text)
+    except ValueError:
+        print "Tree values are null"
     print "total fruit: "+str(totalFruit)
     print "total tree: "+str(totalTree)
 
-    #total all the jobs
+        #total all the jobs
     total = totalFruit+totalTree
+    if total==0:
+        bellHasRung = False
+
     if total>0:
         print str(total)+" jobs available"
         #ring bell 3 times
         i = 0
-        while i != 3:
-            print "\a"
-            time.sleep(0.2)
-            i = i+1
+        if(not bellHasRung):
+            bellHasRung = True
+            while i != 3:
+                print "\a"
+                time.sleep(0.2)
+                i = i+1
+
 
     #close tab
     body = browser.find_element_by_tag_name("body")
