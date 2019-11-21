@@ -3,13 +3,22 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 
-
-POLL_RATE = 30
+POLL_RATE = 10
 browser = webdriver.Firefox()
 notLogin = True
 bellHasRung = False
 
+#initialise vars
+highFruit = 0
+medFruit = 0
+lowFruit = 0
+
+highTree = 0
+medTree = 0
+lowTree = 0
 while(1):
     
     body = browser.find_element_by_tag_name("body")
@@ -28,35 +37,44 @@ while(1):
         submit = browser.find_element_by_class_name("mat-button-wrapper")
         submit.click()
         notLogin = False
+        time.sleep(5)
 
+
+    #wait for new page to load
+    time.sleep(5)
 
     #check for fruit jobs
-    time.sleep(5)
     #check High Priority Job for fruit finding
-    highFruit = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[1]/div[3]/label')
-    print "high fruit: "+highFruit.text
-    #check Medium Priority Job for fruit finding
-    medFruit = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[1]/div[2]/label')
-    print "med fruit: "+medFruit.text
-    #check High Priority Job for fruit finding
-    lowFruit = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[1]/div[1]/label')
-    print "low fruit: "+lowFruit.text
+    try:
+        highFruit = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[1]/div[3]/label')
+        print "high fruit: "+highFruit.text
+        #check Medium Priority Job for fruit finding
+        medFruit = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[1]/div[2]/label')
+        print "med fruit: "+medFruit.text
+        #check High Priority Job for fruit finding
+        lowFruit = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[1]/div[1]/label')
+        print "low fruit: "+lowFruit.text
+    except (NoSuchElementException, StaleElementReferenceException) as e:
+        print "failed during fruit element searching"
 
     try:
         totalFruit = int(highFruit.text) + int(medFruit.text) + int(lowFruit.text)
     except ValueError:
         print "fruit values are null"
 
-    #check for tree jobs
-    #check High Priority Job for fruit finding
-    highTree = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[2]/div[3]/label')
-    print "high tree: "+highTree.text
-    #check Medium Priority Job for fruit finding
-    medTree = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[2]/div[2]/label')
-    print "med tree: "+medTree.text
-    #check High Priority Job for fruit finding
-    lowTree = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[2]/div[1]/label')
-    print "low tree: "+lowTree.text
+    try:
+        #check for tree jobs
+        #check High Priority Job for fruit finding
+        highTree = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[2]/div[3]/label')
+        print "high tree: "+highTree.text
+        #check Medium Priority Job for fruit finding
+        medTree = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[2]/div[2]/label')
+        print "med tree: "+medTree.text
+        #check High Priority Job for fruit finding
+        lowTree = browser.find_element_by_xpath('/html/body/nur-root/nur-annotation-products/div/div/div[2]/div[1]/label')
+        print "low tree: "+lowTree.text
+    except (NoSuchElementException, StaleElementReferenceException)as e:
+        print "failed during tree element searching"
 
     try:
         totalTree = int(highTree.text) + int(medTree.text) + int(lowTree.text)
